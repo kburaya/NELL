@@ -1,25 +1,34 @@
-import q
 import argparse
 import json
 import wikipedia
 import codecs
-@q
-def main():
-    #q.d()
 
+def main():
     parser = argparse.ArgumentParser(description='Downloading wikipedia category page')
     parser.add_argument("-file", type = str, help='Path to json with pagenames')
+    parser.add_argument("-num", type = int, help='Number of pages to extract, use "-1" for all pages from file')
 
     wikipedia.set_lang("ru")
 
     args = parser.parse_args()
     file = open(args.file, 'r')
     categories = json.load(file)
-    textCorpus = ''
     punctuation = ['.', ',', '=', '==', '===']
 
-    corpus = codecs.open('resources/textCorpus.txt', 'w', errors='ignore')
-    for i in range(0, categories[u'*'][0][u'a'][u'*'].__len__()):
+    part = 0
+    filename = 'resources/pages/text-corpus.part' + str(part) + '.txt'
+    corpus = codecs.open(filename, 'w', errors='ignore')
+
+    if args.num == -1:
+        pages_num = int(categories[u'*'][0][u'a'][u'*'].__len__())
+    else:
+        pages_num = int(args.num)
+
+    for i in range(0, pages_num):
+        if int(i/100) != part:
+            part += 1
+            filename = 'resources/pages/text-corpus.part' + str(part) + '.txt'
+            corpus = codecs.open(filename, 'w', errors='ignore')
         category_name = ''
         page = ''
         try:
@@ -34,15 +43,12 @@ def main():
             if(page != ''):
                 page = ' '.join([word for word in page.split() if word not in punctuation])
                 page = page.replace(',', '')
-                page = page.encode('utf8')
+                #page = page.encode('utf8')
                 corpus.write(page)
                 print(category_name)
 
     corpus.close()
     return
-
-
-
 
 if __name__ == "__main__":
     main()
