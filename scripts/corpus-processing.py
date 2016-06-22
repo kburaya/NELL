@@ -78,8 +78,8 @@ def find_patterns(text_corpus):
 
     mystem = Mystem()
     categories = dict()
-    categories_file = open('results/categories.txt', 'w')
-    categories_dict = open('results/categories-dict.json', 'w')
+    #categories_file = open('results/categories.txt', 'w')
+    #categories_dict = open('results/categories-dict.json', 'w')
 
     for pattern in patterns_lib:
         for result in re.finditer(pattern, text_corpus):
@@ -100,19 +100,21 @@ def find_patterns(text_corpus):
                 word_2 = word_2
 
             logging.debug('Found SUBCATEGORY: %s, CATEGORY: %s, RELATION: %s', word_1, word_2, result.group())
-            logging.debug('Found CONTEXT: [%s]', text_corpus[result.start()-50:result.start()+50])
-            categories_file.write('Subcategory: ' + word_1 + ' Category: ' + word_2 + '\n')
-            categories_file.write('Relation: ' + result.group() + '\n\n')
+            logging.debug('CONTEXT: [%s]', text_corpus[result.start()-50:result.start()+50])
+            #categories_file.write('Subcategory: ' + word_1 + ' Category: ' + word_2 + '\n')
+            #categories_file.write('Relation: ' + result.group() + '\n\n')
 
-            try:
-                categories[word_2].append(word_1)
-            except Exception:
-                categories[word_2] = [word_1]
+            # try:
+            #     categories[word_2].append(word_1)
+            # except Exception:
+            #     categories[word_2] = [word_1]
 
-    categories_file.close()
-    categories_dict.write(json.dumps(categories, ensure_ascii=False))
+    #categories_file.close()
+    #categories_dict.write(json.dumps(categories, ensure_ascii=False))
     return
 
+def chunked(file, chunk_size):
+    return iter(lambda: file.read(chunk_size), '')
 
 def main():
     parser = argparse.ArgumentParser(description='Text corpus file')
@@ -125,8 +127,11 @@ def main():
                     level=logging.DEBUG,
                     filename='results/parser.log')
 
-    text_corpus = codecs.open(args.file).read()
-    find_patterns(text_corpus)
+    corpus = open(args.file, errors='ignore', encoding='cp1251')
+
+    for line in chunked(corpus, 512):
+        find_patterns(line)
+
     return
 
 if __name__ == "__main__":
