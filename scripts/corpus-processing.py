@@ -4,11 +4,12 @@ import re
 import logging, os, sys
 import codecs
 import json
+from os import listdir
+from os.path import isfile, join
 
 mystem = None
-simple_logger = None
-medium_logger = None
-hard_logger = None
+logger = None
+dictionary = dict()
 
 def find_lexema(word, strLex):
     try:
@@ -23,10 +24,12 @@ def find_lexema(word, strLex):
 
 def get_prev_word(text_corpus, position):
     word = ''
+    if(text_corpus[position] == '.'):
+        return ''
     if(text_corpus[position] == ' '):
        position -= 1
     for letter in reversed(range(position + 1)):
-        if(text_corpus[letter] == ' '):
+        if(text_corpus[letter] == ' ' or text_corpus[letter] == '.'):
             break
         word = word + text_corpus[letter]
     word = word[::-1]
@@ -35,54 +38,59 @@ def get_prev_word(text_corpus, position):
 
 def get_next_word(text_corpus, position):
     word = ''
+    if(text_corpus[position] == '.'):
+        return ''
     if(text_corpus[position] == ' '):
         position += 1
     for letter in range(position, len(text_corpus)):
-        if(text_corpus[letter] == ' '):
+        if(text_corpus[letter] == ' ' or text_corpus[letter] == '.'):
             break
         word = word + text_corpus[letter]
     return word
 
 
-def find_part_of_speech_before(text_corpus, position, parts_of_speech, strict = False):
+def find_part_of_speech_before(text_corpus, position, parts_of_speech, strict = True):
     word = ''
-
     counter = 0
     while counter <= 100:
         counter += 1
-
+        flag = False
         word = get_prev_word(text_corpus, position)
+        if(len(word) == 1 or len(word) == 0):
+            return ''
         position = position - len(word) - 1
         word_stem = mystem.analyze(word)
-        flag = False
         for part_of_speech in parts_of_speech:
-            if find_lexema(word_stem, part_of_speech) == 0:
+            if not find_lexema(word_stem, part_of_speech):
                 flag = True
         if not flag:
             if strict and (find_lexema(word_stem, '|')):
-                logging.info("Found ambiguity in word %s", word)
+                return ''
             return word
 
     return word
 
 
-def find_first_part_of_speech_next(text_corpus, position, parts_of_speech, strict = False):
-
+def find_first_part_of_speech_next(text_corpus, position, parts_of_speech, strict = True):
+    word = ''
     counter = 0
-    while counter <= 100:
+    while counter <= 5:
         counter += 1
         word = get_next_word(text_corpus, position)
+        if(len(word) == 1 or len(word) == 0):
+            return ''
         position += len(word) + 1
         word_stem = mystem.analyze(word)
         flag = False
         for part_of_speech in parts_of_speech:
-            if find_lexema(word_stem, part_of_speech) == 0:
+            if not find_lexema(word_stem, part_of_speech):
                 flag = True
         if not flag:
             if strict and (find_lexema(word_stem, '|')):
-                logging.info("Found ambiguity in word %s", word)
+                return ''
             return word
-    return
+
+    return ''
 
 def set_mystem():
     global mystem
@@ -93,6 +101,9 @@ def define_words(text_corpus, result, parts_of_speech_1, parts_of_speech_2, logg
 
     word_1 = find_part_of_speech_before(text_corpus, result.start(), parts_of_speech_1)
     word_2 = find_first_part_of_speech_next(text_corpus, result.end(), parts_of_speech_2)
+    if word_1 == '' or word_2 == '':
+        return
+
     word_1_stem = mystem.analyze(word_1)
     word_2_stem = mystem.analyze(word_2)
     try:
@@ -103,38 +114,54 @@ def define_words(text_corpus, result, parts_of_speech_1, parts_of_speech_2, logg
         word_2 = word_2_stem[0]['analysis'][0]['lex']
     except Exception:
         word_2 = word_2
+
+
     logger.info('Found SUBCATEGORY: [%s], RELATION: [%s], CATEGORY: [%s]', word_1, result.group(), word_2)
     logger.info('CONTEXT: [%s] \n', text_corpus[result.start() - 80:result.start() + 80])
 
+    dict_key = word_1 + ' ' + word_2
+    try:
+        dictionary[dict_key] += 1
+    except:
+        dictionary.update({dict_key:1})
+
+    if(dictionary.__len__() > 1000000):
+        for key in dictionary.keys():
+            if(dictionary[key] == 1):
+                dictionary.pop(key)
+
     return
 
-
 def find_patterns(text_corpus):
-    patterns_lib = []
-    patterns_lib.append(re.compile(u'\s((относ[ия]тся)\s(к)\s)', re.UNICODE))
-    patterns_lib.append(re.compile(u'\s(явля[ею]тся\s)', re.UNICODE))
-    patterns_lib.append(re.compile(u'\s(счита[ею]тся\s)', re.UNICODE))
-    patterns_lib.append(re.compile(u'\s(-)\s(это\s)', re.UNICODE))
-    patterns_lib.append(re.compile(u'\s(-)\s', re.UNICODE))
 
-    #categories = dict()
-    #categories_file = open('results/categories.txt', 'w')
-    #categories_dict = open('results/categories-dict.json', 'w')
 
-    for pattern in patterns_lib:
-        for result in re.finditer(pattern, text_corpus):
-            #find noun - relation - noun
-            define_words(text_corpus, result, ['S'], ['S'], simple_logger)
-            define_words(text_corpus, result, ['S'], ['S', 'род'], medium_logger)
-            define_words(text_corpus, result, ['S', 'им'], ['S', 'род'], hard_logger, strict = True)
+    pattern = re.compile(u'\s((относ[ия]тся)\s(к)\s)', re.UNICODE)
+    for result in re.finditer(pattern, text_corpus):
+        # for pattern "относятся к"
+        define_words(text_corpus, result, ['S,', 'им'], ['S,', 'род'], logger, strict=True)
+        define_words(text_corpus, result, ['S,', 'им'], ['S,', 'дат'], logger, strict=True)
 
-            # try:
-            #     categories[word_2].append(word_1)
-            # except Exception:
-            #     categories[word_2] = [word_1]
+    pattern = re.compile(u'\s(явля[ею]тся\s)', re.UNICODE)
+    for result in re.finditer(pattern, text_corpus):
+        # for pattern "являются"
+        define_words(text_corpus, result, ['S,', 'им'], ['S,', 'твор'], logger, strict=True)
 
-    #categories_file.close()
-    #categories_dict.write(json.dumps(categories, ensure_ascii=False))
+
+    pattern = re.compile(u'\s(счита[ею]тся\s)', re.UNICODE)
+    for result in re.finditer(pattern, text_corpus):
+        # for pattern "считаются"
+        define_words(text_corpus, result, ['S,', 'им'], ['S,', 'твор'], logger, strict=True)
+
+    pattern = re.compile(u'\s(-)\s(это\s)', re.UNICODE)
+    for result in re.finditer(pattern, text_corpus):
+        # for pattern "считаются"
+        define_words(text_corpus, result, ['S,', 'им'], ['S,', 'им'], logger, strict=True)
+
+    pattern = re.compile(u'\s(-)\s', re.UNICODE)
+    for result in re.finditer(pattern, text_corpus):
+        # for pattern "считаются"
+        define_words(text_corpus, result, ['S,', 'им'], ['S,', 'им'], logger, strict=True)
+
     return
 
 
@@ -157,7 +184,8 @@ def setup_logger(logger_name, log_file, level=logging.INFO):
 
 def main():
     parser = argparse.ArgumentParser(description =' Text corpus file')
-    parser.add_argument("-file", type = str, help = 'Path to json with pagenames')
+    parser.add_argument("-path", type = str, help = 'Path to json with pagenames')
+    parser.add_argument("-mode", type=str, help='[s/f] - single fiяle or folder with texts')
 
     args = parser.parse_args()
 
@@ -167,23 +195,29 @@ def main():
     #                 filename='results/parser.log',
     #                 filemode='a')
 
-    global simple_logger
-    setup_logger('simple', 'results/nom-nom.log')
-    simple_logger = logging.getLogger('simple')
+    global logger
+    setup_logger('simple', 'results/corpus.log')
+    logger = logging.getLogger('simple')
 
-    global medium_logger
-    setup_logger('medium', 'results/any-gen.log')
-    medium_logger = logging.getLogger('medium')
 
-    global hard_logger
-    setup_logger('hard', 'results/nom-gen-strict.log')
-    hard_logger = logging.getLogger('hard')
-
-    corpus = open(args.file, errors='ignore')
-    text_corpus = corpus.read()
     set_mystem()
 
-    find_patterns(text_corpus)
+    if(args.mode == 's'):
+        corpus = open(args.path, errors='ignore')
+        text_corpus = corpus.read()
+        find_patterns(text_corpus)
+
+    if(args.mode == 'f'):
+        files = [f for f in listdir(args.path) if isfile(join(args.path, f))]
+        for file in files:
+            filename = args.path + file
+            corpus = open(filename, errors='ignore')
+            text_corpus = corpus.read()
+            find_patterns(text_corpus)
+
+    with open('results/dictionary.json', 'w') as jsonfile:
+        json.dump(dictionary, jsonfile, ensure_ascii=False)
+
     return
 
 if __name__ == "__main__":
