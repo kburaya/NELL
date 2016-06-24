@@ -222,6 +222,7 @@ def main():
             filename = args.path + file
             corpus = open(filename, errors='ignore')
             text_corpus = corpus.read()
+            find_patterns(text_corpus)
             check_dictionary(1)
 
     with open('results/dictionary.json', 'w') as jsonfile:
