@@ -2,10 +2,11 @@ import argparse
 from pymystem3 import Mystem
 import re
 import logging, os, sys
-import codecs
+import time
 import json
 from os import listdir
 from os.path import isfile, join
+from multiprocessing import Pool
 
 mystem = None
 logger = None
@@ -92,9 +93,20 @@ def find_first_part_of_speech_next(text_corpus, position, parts_of_speech, stric
 
     return ''
 
+
 def set_mystem():
     global mystem
     mystem = Mystem()
+
+
+def check_dictionary(gain):
+    if (dictionary.__len__() > 1000000):
+        gain += 1
+    global dictionary
+    keys = list(dictionary.keys())
+    for key in keys:
+        if(dictionary[key] <= gain):
+            dictionary.pop(key)
 
 
 def define_words(text_corpus, result, parts_of_speech_1, parts_of_speech_2, logger, strict = False):
@@ -119,18 +131,15 @@ def define_words(text_corpus, result, parts_of_speech_1, parts_of_speech_2, logg
     logger.info('Found SUBCATEGORY: [%s], RELATION: [%s], CATEGORY: [%s]', word_1, result.group(), word_2)
     logger.info('CONTEXT: [%s] \n', text_corpus[result.start() - 80:result.start() + 80])
 
+    global dictionary
     dict_key = word_1 + ' ' + word_2
     try:
         dictionary[dict_key] += 1
     except:
         dictionary.update({dict_key:1})
 
-    if(dictionary.__len__() > 1000000):
-        for key in dictionary.keys():
-            if(dictionary[key] == 1):
-                dictionary.pop(key)
-
     return
+
 
 def find_patterns(text_corpus):
 
@@ -140,6 +149,7 @@ def find_patterns(text_corpus):
         # for pattern "относятся к"
         define_words(text_corpus, result, ['S,', 'им'], ['S,', 'род'], logger, strict=True)
         define_words(text_corpus, result, ['S,', 'им'], ['S,', 'дат'], logger, strict=True)
+
 
     pattern = re.compile(u'\s(явля[ею]тся\s)', re.UNICODE)
     for result in re.finditer(pattern, text_corpus):
@@ -152,21 +162,19 @@ def find_patterns(text_corpus):
         # for pattern "считаются"
         define_words(text_corpus, result, ['S,', 'им'], ['S,', 'твор'], logger, strict=True)
 
+
     pattern = re.compile(u'\s(-)\s(это\s)', re.UNICODE)
     for result in re.finditer(pattern, text_corpus):
         # for pattern "считаются"
         define_words(text_corpus, result, ['S,', 'им'], ['S,', 'им'], logger, strict=True)
+
 
     pattern = re.compile(u'\s(-)\s', re.UNICODE)
     for result in re.finditer(pattern, text_corpus):
         # for pattern "считаются"
         define_words(text_corpus, result, ['S,', 'им'], ['S,', 'им'], logger, strict=True)
 
-    return
-
-
-def chunked(file, chunk_size):
-    return iter(lambda: file.read(chunk_size), '')
+    return 0
 
 
 def setup_logger(logger_name, log_file, level=logging.INFO):
@@ -201,24 +209,28 @@ def main():
 
 
     set_mystem()
+    pool = Pool(processes=4)
 
     if(args.mode == 's'):
         corpus = open(args.path, errors='ignore')
         text_corpus = corpus.read()
         find_patterns(text_corpus)
-
+    result = None
     if(args.mode == 'f'):
         files = [f for f in listdir(args.path) if isfile(join(args.path, f))]
         for file in files:
             filename = args.path + file
             corpus = open(filename, errors='ignore')
             text_corpus = corpus.read()
-            find_patterns(text_corpus)
+            check_dictionary(1)
 
     with open('results/dictionary.json', 'w') as jsonfile:
         json.dump(dictionary, jsonfile, ensure_ascii=False)
 
     return
 
+
 if __name__ == "__main__":
+    start_time = time.time()
     main()
+    print("--- %s seconds ---" % (time.time() - start_time))
