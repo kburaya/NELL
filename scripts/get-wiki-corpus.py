@@ -27,6 +27,7 @@ def main():
     for i in range(0, pages_num):
         if int(i/100) != part:
             part += 1
+            print(str(i) + '/' + str(pages_num))
             filename = 'resources/pages/text-corpus.part' + str(part) + '.txt'
             corpus = codecs.open(filename, 'w', errors='ignore')
         category_name = ''
