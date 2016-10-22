@@ -8,7 +8,7 @@ mystem = Mystem()
 
 class Category:
     categoryName = ''
-    instances = list() # list of IWord objects
+    instances = list()
     extractionPatterns = list() # ids of patterns from PatternsPool
     promotedInstances = dict()
 
@@ -19,4 +19,18 @@ class Category:
         self.promotedInstances = dict()
 
     def addPromotedInstance(self, instance):
-        self.promotedInstances.append(instance)
+        for _instance in self.instances:
+            if _instance == instance:
+                return False
+        self.instances.append(instance)
+        return True
+
+    def addPromotedPattern(self, pattern, patternPoolFrom, patternPool):
+        # check if the same pattern from promoted pattern pool exists in actual pattern pool or in extraction patterns for category
+        # check by string values of pattern
+
+        for _patternID in self.extractionPatterns:
+            if patternPool.getPatternByID(_patternID).pattern == patternPoolFrom.getPatternByID(pattern.id).pattern:
+                return False
+        self.extractionPatterns.append(pattern.id)
+        return True

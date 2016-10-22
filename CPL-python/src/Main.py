@@ -15,12 +15,14 @@ morph = pymorphy2.MorphAnalyzer()
 
 # FIXME enter full path for current files on your computer
 ontologyPath = '/Users/kseniya/Documents/Study/NELL/CPL-python/resources/xlsx/categories_animals_ru.xls'
+ontologyJSON = '/Users/kseniya/Documents/Study/NELL/CPL-python/resources/json/ontology.json'
 patternsPoolPath = '/Users/kseniya/Documents/Study/NELL/CPL-python/resources/xlsx/patterns.xlsx'
+patternsPoolJSON = '/Users/kseniya/Documents/Study/NELL/CPL-python/resources/json/patternsPool.json'
 logPath = '/Users/kseniya/Documents/Study/NELL/CPL-python/src/log/cpl.log'
 textsPath = '/Users/kseniya/Documents/Study/NELL/CPL-python/resources/texts'
 processedTextsPath = '/Users/kseniya/Documents/Study/NELL/CPL-python/resources/processed'
 # FIXME end of path section
-
+ITERATIONS = 3
 
 def inizialize():
     logging.basicConfig(filename=logPath, filemode='w', level=logging.DEBUG, format='%(asctime)s %(message)s')
@@ -33,24 +35,34 @@ def inizialize():
 
 def main():
     patternsPool, ontology = inizialize()
-    # print (Reading step begin\n")
-    # files = [f for f in os.listdir(textsPath) if os.path.isfile(os.path.join(textsPath, f))]
-    # for file in tqdm(files):
-    #     originalTextFile = textsPath + '/' + file
-    #     processedTextFile = processedTextsPath + '/' + file + '.json'
-    #     if not os.path.exists(processedTextFile):
-    #         processedText = ProcessedText(originalTextFile, morph)
-    #         processedText.toJSON(processedTextFile)
-    #         logging.info("Found new file %s. Proccessed successfully from %s to %s" % (file, textsPath, processedTextsPath))
+    print ("Reading step begin\n")
+    files = [f for f in os.listdir(textsPath) if os.path.isfile(os.path.join(textsPath, f))]
+    for file in tqdm(files):
+        originalTextFile = textsPath + '/' + file
+        processedTextFile = processedTextsPath + '/' + file + '.json'
+        if not os.path.exists(processedTextFile):
+            processedText = ProcessedText(originalTextFile, morph)
+            processedText.toJSON(processedTextFile)
+            logging.info("Found new file %s. Proccessed successfully from %s to %s" % (file, textsPath, processedTextsPath))
+        break
 
     instanceExtractor = InstanceExtractor()
     patternExtractor = PatternExtractor()
-    print ("Learning step begin\n")
-    ontology = instanceExtractor.learn(patternsPool, ontology, processedTextsPath)
-    print ("Evaluationg step begin\n")
-    ontology = instanceExtractor.evaluate(ontology, processedTextsPath)
-    promotedPatternsPool, promotedPatternDict = patternExtractor.learn(ontology, processedTextsPath)
-    ontology = patternExtractor.evaluate(ontology, promotedPatternsPool, promotedPatternDict)
+    for iteration in (1, ITERATIONS):
+        logging.info('Iteration %s begin' % (str(iteration)))
+        print('Iteration %s begin' % (str(iteration)))
+
+
+        print("\nInstance Extractor learning step begin")
+        ontology = instanceExtractor.learn(patternsPool, ontology, processedTextsPath)
+        print("\nInstance Extractor evaluationg step begin")
+        ontology = instanceExtractor.evaluate(ontology, processedTextsPath)
+        print("\nPattern Extractor learning step begin")
+        promotedPatternsDict, promotedPatternsPool = patternExtractor.learn(ontology, processedTextsPath)
+        print("\nPattern Extractor evaluationg step begin")
+        patternsPool, ontology = patternExtractor.evaluate(ontology, patternsPool, promotedPatternsPool, promotedPatternsDict, processedTextsPath)
+        ontology.toJSON(ontologyJSON)
+        patternsPool.toJSON(patternsPoolJSON)
 
 
 if __name__ == "__main__":

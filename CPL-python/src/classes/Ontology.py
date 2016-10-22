@@ -3,6 +3,7 @@ sys.path.insert(0, '/Users/kseniya/Documents/Study/NELL/CPL-python/src/classes')
 from Category import Category
 import pandas as pd
 from pymystem3 import Mystem
+import json
 mystem = Mystem()
 
 
@@ -24,4 +25,26 @@ class Ontology:
                 extractionPatterns = [int(s) for s in row['seedExtractionPatterns'].split(' ') if s.isdigit()]
 
             self.instances.append(Category(categoryName, instances, extractionPatterns))
+        return
+
+
+    def toJSON(self, file):
+        ontologyJSON = dict()
+        for i in range(0, len(self.instances)):
+            ontologyJSON[i] = dict()
+            ontologyJSON[i]['categoryName'] = self.instances[i].categoryName
+            try:
+                if self.instances[i].instances.__len__() > 0:
+                    ontologyJSON[i]['seedInstances'] = self.instances[i].instances
+            except:
+                ontologyJSON[i]['seedInstances'] = []
+
+            try:
+                if self.instances[i].extractionPatterns.__len__() > 0:
+                    ontologyJSON[i]['seedExtractionPatterns'] = self.instances[i].extractionPatterns
+            except:
+                ontologyJSON[i]['seedExtractionPatterns'] = []
+
+        with open(file, 'w') as data:
+            json.dump(ontologyJSON, data, ensure_ascii=False)
         return

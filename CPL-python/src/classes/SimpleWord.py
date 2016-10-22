@@ -2,7 +2,6 @@ import string
 
 class SimpleWord:
     isPunctuation = False
-
     def __init__(self, word, morph):
         if word == None:
             return
@@ -24,6 +23,7 @@ class SimpleWord:
         self.original = wordJSON['original']
         if wordJSON['isPunctuation']:
             self.isPunctuation = True
+            self.lexem = self.original
             return self
         self.isPunctuation = False
 

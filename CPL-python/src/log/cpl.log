@@ -1,7 +1,6 @@
-2016-10-18 12:58:16,387 Patterns pool inizializated
-2016-10-18 12:58:18,781 Ontology inizializated
-2016-10-18 12:58:18,800 Found new promoted instance 'лягушка' in sentence 'Лягушки относятся к амфибиям.' with pattern 'arg2 относятся к arg1'
-2016-10-18 12:58:18,801 Found new promoted instance 'собака' in sentence 'Млекопитающие, такие как собаки.' with pattern 'arg1, такие как arg2'
-2016-10-18 12:58:18,803 Found new promoted instance 'собака' in sentence 'Собаки являются млекопитающими.' with pattern 'arg2 являются arg1'
-2016-10-18 13:02:13,397 Adding new instance [лягушка] to Category [амфибия] with precision value [0.02127659574468085]
-2016-10-18 13:02:17,828 Adding new instance [собака] to Category [млекопитающее] with precision value [0.004545454545454545]
+2016-10-22 22:14:43,043 Patterns pool inizializated
+2016-10-22 22:14:44,522 Ontology inizializated
+2016-10-22 22:14:44,528 Iteration 1 begin
+2016-10-22 22:14:44,551 Found new promoted instance [собака] in sentence [Собаки являются млекопитающими.] with pattern 'arg2 являются arg1'
+2016-10-22 22:14:44,554 Found new promoted instance [собака] in sentence [Млекопитающие, такие как собаки.] with pattern 'arg1, такие как arg2'
+2016-10-22 22:14:44,557 Found new promoted instance [лягушка] in sentence [Лягушки относятся к амфибиям.] with pattern 'arg2 относятся к arg1'

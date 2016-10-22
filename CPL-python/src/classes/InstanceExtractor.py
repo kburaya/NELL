@@ -16,6 +16,7 @@ class InstanceExtractor:
 
 
     def learn(self, patternsPool, ontology, processedTextsPath):
+        print('\nInstance Extractor. Learning step')
         files = [f for f in os.listdir(processedTextsPath) if os.path.isfile(os.path.join(processedTextsPath, f))]
         for file in tqdm(files):
             #file = open(processedTextsPath + '/' + file, 'rb')
@@ -41,7 +42,7 @@ class InstanceExtractor:
                     if (arg1.lexem == category.categoryName):
                         if self.checkWordForPattern(arg1, pattern.arg1):
                             if self.checkWordForPattern(arg2, pattern.arg2):
-                                logging.info("Found new promoted instance '%s' in sentence '%s' with pattern '%s'" %
+                                logging.info("Found new promoted instance [%s] in sentence [%s] with pattern '%s'" %
                                              (arg2.lexem, sentence.string, pattern.pattern))
                                 try:
                                     category.promotedInstances[arg2.lexem] += 1
@@ -73,7 +74,9 @@ class InstanceExtractor:
                 return True
         return False
 
+
     def evaluate(self, ontology, processedTextsPath, treshold = 0):
+        print('\nInstance Extractor. Evaluating step.')
         for instance in ontology.instances:
             precision = dict()
             for promotedInstance in instance.promotedInstances:
@@ -92,9 +95,9 @@ class InstanceExtractor:
 
             instance.promotedInstances = dict()
             for promotedInstance in precision:
-                instance.instances.append(promotedInstance)
-                logging.info("Adding new instance [%s] to Category [%s] with precision value [%s]" %
-                             (promotedInstance, instance.categoryName, str(precision[promotedInstance])))
+                if instance.addPromotedInstance(promotedInstance):
+                    logging.info("Adding new instance [%s] to Category [%s] with precision value [%s]" %
+                                (promotedInstance, instance.categoryName, str(precision[promotedInstance])))
         return ontology
 
 def findNumberOfInstanceInText(instance, processedTextsPath):
