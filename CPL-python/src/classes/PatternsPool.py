@@ -1,6 +1,6 @@
 import sys
 import pandas as pd
-sys.path.insert(0, '/Users/kseniya/Documents/Study/NELL/CPL-python/src/classes')
+sys.path.insert(0, '../src/classes')
 from PatternTemplateWord import PatternTemplateWord
 from Pattern import Pattern
 import json

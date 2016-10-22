@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0, '/Users/kseniya/Documents/Study/NELL/CPL-python/src/classes')
+sys.path.insert(0, '../src/classes')
 from PatternsPool import PatternsPool
 from Ontology import Ontology
 from ProcessedText import ProcessedText
