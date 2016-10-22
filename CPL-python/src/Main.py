@@ -14,13 +14,13 @@ morph = pymorphy2.MorphAnalyzer()
 
 
 # FIXME enter full path for current files on your computer
-ontologyPath = '/Users/kseniya/Documents/Study/NELL/CPL-python/resources/xlsx/categories_animals_ru.xls'
-ontologyJSON = '/Users/kseniya/Documents/Study/NELL/CPL-python/resources/json/ontology.json'
-patternsPoolPath = '/Users/kseniya/Documents/Study/NELL/CPL-python/resources/xlsx/patterns.xlsx'
-patternsPoolJSON = '/Users/kseniya/Documents/Study/NELL/CPL-python/resources/json/patternsPool.json'
-logPath = '/Users/kseniya/Documents/Study/NELL/CPL-python/src/log/cpl.log'
-textsPath = '/Users/kseniya/Documents/Study/NELL/CPL-python/resources/texts'
-processedTextsPath = '/Users/kseniya/Documents/Study/NELL/CPL-python/resources/processed'
+ontologyPath = '../resources/xlsx/categories_animals_ru.xls'
+ontologyJSON = '../resources/json/ontology.json'
+patternsPoolPath = '../resources/xlsx/patterns.xlsx'
+patternsPoolJSON = '../resources/json/patternsPool.json'
+logPath = 'log/cpl.log'
+textsPath = '../resources/texts'
+processedTextsPath = '../resources/processed'
 # FIXME end of path section
 ITERATIONS = 3
 
