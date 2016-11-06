@@ -23,7 +23,7 @@ textsPath = '../resources/texts'
 processedTextsPath = '../resources/processed'
 
 # FIXME end of path section
-ITERATIONS = 10
+ITERATIONS = 100
 
 
 def inizialize():
@@ -50,7 +50,7 @@ def main():
 
     instanceExtractor = InstanceExtractor()
     patternExtractor = PatternExtractor()
-    for iteration in (1, ITERATIONS):
+    for iteration in range(1, ITERATIONS):
         logging.info('Iteration %s begin' % (str(iteration)))
         print('\nIteration %s begin' % (str(iteration)))
 

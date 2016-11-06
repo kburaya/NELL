@@ -23,6 +23,7 @@ class PatternExtractor:
         promotedPatternsPool = PatternsPool(None)
         files = [f for f in os.listdir(processedTextsPath) if os.path.isfile(os.path.join(processedTextsPath, f))]
         for file in tqdm(files):
+            logging.info("Processing file %s" % file)
             # file = open(processedTextsPath + '/' + file, 'rb')
             text = ProcessedText.fromJSON(processedTextsPath + '/' + file)
             for sentence in text.sentences:
