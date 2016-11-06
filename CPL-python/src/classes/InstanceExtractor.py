@@ -70,9 +70,12 @@ class InstanceExtractor:
 
 
     def checkWordForPattern(self, word, patternWord):
-        if (word.case.lower() == patternWord.case.lower()) and (word.pos.lower() == patternWord.pos.lower()):
-            if ((word.number.lower()) == patternWord.number.lower()) or (patternWord.number == 'all'):
-                return True
+        try:
+            if (word.case.lower() == patternWord.case.lower()) and (word.pos.lower() == patternWord.pos.lower()):
+                if ((word.number.lower()) == patternWord.number.lower()) or (patternWord.number == 'all'):
+                    return True
+        except:
+            return False
         return False
 
 

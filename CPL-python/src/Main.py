@@ -37,16 +37,16 @@ def inizialize():
 
 def main():
     patternsPool, ontology = inizialize()
-    # print ("Reading step begin\n")
-    # files = [f for f in os.listdir(textsPath) if os.path.isfile(os.path.join(textsPath, f))]
-    # for file in tqdm(files):
-    #     originalTextFile = textsPath + '/' + file
-    #     processedTextFile = processedTextsPath + '/' + file + '.json'
-    #     if not os.path.exists(processedTextFile):
-    #         processedText = ProcessedText(originalTextFile, morph)
-    #         processedText.toJSON(processedTextFile)
-    #         logging.info("Found new file %s. Proccessed successfully from %s to %s" % (file, textsPath, processedTextsPath))
-    #     break
+    print ("Reading step begin\n")
+    files = [f for f in os.listdir(textsPath) if os.path.isfile(os.path.join(textsPath, f))]
+    for file in tqdm(files):
+        originalTextFile = textsPath + '/' + file
+        processedTextFile = processedTextsPath + '/' + file + '.json'
+        if not os.path.exists(processedTextFile):
+            processedText = ProcessedText(originalTextFile, morph)
+            processedText.toJSON(processedTextFile)
+            logging.info("Found new file %s. Proccessed successfully from %s to %s" % (file, textsPath, processedTextsPath))
+        break
 
     instanceExtractor = InstanceExtractor()
     patternExtractor = PatternExtractor()
