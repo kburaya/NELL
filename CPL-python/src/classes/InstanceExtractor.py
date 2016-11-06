@@ -77,11 +77,12 @@ class InstanceExtractor:
 
     def evaluate(self, ontology, processedTextsPath, treshold = 0):
         print('\nInstance Extractor. Evaluating step.')
+        ngrams_dictionary = load_dictionary('ngrams_dictionary.pkl')
         for instance in ontology.instances:
             precision = dict()
             for promotedInstance in instance.promotedInstances:
                 numOfCoOccurence = instance.promotedInstances[promotedInstance]
-                numInText = findNumberOfInstanceInText(promotedInstance, processedTextsPath)
+                numInText = ngrams_dictionary[promotedInstance]
                 precision[promotedInstance] = numOfCoOccurence / numInText
             precision = SortedDict(precision)
 
@@ -113,3 +114,9 @@ def findNumberOfInstanceInText(instance, processedTextsPath):
                 if word.lexem == instance:
                     count += 1
     return count
+
+
+def load_dictionary(file):
+    with open(file, 'rb') as f:
+        obj = pickle.load(f)
+    return obj

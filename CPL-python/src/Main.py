@@ -21,8 +21,10 @@ patternsPoolJSON = '../resources/json/patternsPool.json'
 logPath = 'log/cpl.log'
 textsPath = '../resources/texts'
 processedTextsPath = '../resources/processed'
+
 # FIXME end of path section
-ITERATIONS = 3
+ITERATIONS = 10
+
 
 def inizialize():
     logging.basicConfig(filename=logPath, filemode='w', level=logging.DEBUG, format='%(asctime)s %(message)s')
@@ -35,22 +37,22 @@ def inizialize():
 
 def main():
     patternsPool, ontology = inizialize()
-    print ("Reading step begin\n")
-    files = [f for f in os.listdir(textsPath) if os.path.isfile(os.path.join(textsPath, f))]
-    for file in tqdm(files):
-        originalTextFile = textsPath + '/' + file
-        processedTextFile = processedTextsPath + '/' + file + '.json'
-        if not os.path.exists(processedTextFile):
-            processedText = ProcessedText(originalTextFile, morph)
-            processedText.toJSON(processedTextFile)
-            logging.info("Found new file %s. Proccessed successfully from %s to %s" % (file, textsPath, processedTextsPath))
-        break
+    # print ("Reading step begin\n")
+    # files = [f for f in os.listdir(textsPath) if os.path.isfile(os.path.join(textsPath, f))]
+    # for file in tqdm(files):
+    #     originalTextFile = textsPath + '/' + file
+    #     processedTextFile = processedTextsPath + '/' + file + '.json'
+    #     if not os.path.exists(processedTextFile):
+    #         processedText = ProcessedText(originalTextFile, morph)
+    #         processedText.toJSON(processedTextFile)
+    #         logging.info("Found new file %s. Proccessed successfully from %s to %s" % (file, textsPath, processedTextsPath))
+    #     break
 
     instanceExtractor = InstanceExtractor()
     patternExtractor = PatternExtractor()
     for iteration in (1, ITERATIONS):
         logging.info('Iteration %s begin' % (str(iteration)))
-        print('Iteration %s begin' % (str(iteration)))
+        print('\nIteration %s begin' % (str(iteration)))
 
 
         print("\nInstance Extractor learning step begin")

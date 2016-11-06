@@ -7,6 +7,7 @@ import os
 import logging
 import nltk
 from sortedcontainers import SortedDict
+import pickle
 import traceback
 
 
@@ -68,13 +69,25 @@ class PatternExtractor:
         # TODO think how to rewrite this part
         print('Pattern Extractor. Evaluating step.')
         logging.info('Pattern Extractor. Evaluating step.')
-        patternsInText = self.patternsInTextDict(promotedPatternsPool, processedTextsPath)
+        ngrams_dictionary = load_dictionary('ngrams_dictionary.pkl')
         for instance in ontology.instances:
             precision = dict()
             for pattern in promotedPatternsPool.patterns:
+                s_pattern = ''
+                pattern_tokenize = nltk.word_tokenize(pattern.pattern)
+                try:
+                    pattern_tokenize.remove('arg2')
+                    pattern_tokenize.remove('arg1')
+                except:
+                    logging.error("Can't remove arg1/2 arguments from pattern string, passing")
+                    continue
+                for word in pattern_tokenize:
+                    s_pattern += word
+                    s_pattern += ' '
+                s_pattern = s_pattern[:-1].lower()
                 try:
                     numOfCoOccurence = promotedPatternsDict[pattern.pattern][instance.categoryName]
-                    numInText = patternsInText[pattern.pattern]
+                    numInText = ngrams_dictionary[s_pattern]
                     precision[pattern.pattern] = numOfCoOccurence / numInText
                 except:
                     continue
@@ -163,3 +176,12 @@ def findNumberOfPatternInText(pattern, processedTextsPath):
 def subfinder(mylist, pattern):
     pattern = set(pattern)
     return [x for x in mylist if x in pattern]
+
+
+def load_dictionary(file):
+    with open(file, 'rb') as f:
+        obj = pickle.load(f)
+    return obj
+
+
+
