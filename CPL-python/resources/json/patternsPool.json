@@ -1,1 +1,42 @@
-{"0": {"arg2_pos": "noun", "arg1_case": "nomn", "arg2_num": "all", "pattern": "arg1, такие как arg2", "id": 1, "arg1_pos": "noun", "arg1_num": "plur", "arg2_case": "nomn"}, "1": {"arg2_pos": "noun", "arg1_case": "ablt", "arg2_num": "all", "pattern": "arg2 являются arg1", "id": 2, "arg1_pos": "noun", "arg1_num": "all", "arg2_case": "nomn"}, "2": {"arg2_pos": "noun", "arg1_case": "datv", "arg2_num": "all", "pattern": "arg2 относятся к arg1", "id": 3, "arg1_pos": "adjf ", "arg1_num": "all", "arg2_case": "nomn"}, "3": {"arg2_pos": "noun", "arg1_case": "datv", "arg2_num": "all", "pattern": "arg2 относятся к arg1", "id": 4, "arg1_pos": "noun", "arg1_num": "all", "arg2_case": "nomn"}, "4": {"arg2_pos": "NOUN", "arg1_case": "nomn", "arg2_num": "plur", "pattern": "arg2 это arg1", "id": 7, "arg1_pos": "NOUN", "arg1_num": "plur", "arg2_case": "nomn"}}
+{
+  "0": {
+    "arg2_pos": "noun",
+    "arg2_case": "nomn",
+    "id": 1,
+    "arg1_pos": "noun",
+    "pattern": "arg1, такие как arg2",
+    "arg1_num": "plur",
+    "arg2_num": "all",
+    "arg1_case": "nomn"
+  },
+  "1": {
+    "arg2_pos": "noun",
+    "arg2_case": "nomn",
+    "id": 2,
+    "arg1_pos": "noun",
+    "pattern": "arg2 являются arg1",
+    "arg1_num": "all",
+    "arg2_num": "all",
+    "arg1_case": "ablt"
+  },
+  "2": {
+    "arg2_pos": "noun",
+    "arg2_case": "nomn",
+    "id": 3,
+    "arg1_pos": "adjf ",
+    "pattern": "arg2 относятся к arg1",
+    "arg1_num": "all",
+    "arg2_num": "all",
+    "arg1_case": "datv"
+  },
+  "3": {
+    "arg2_pos": "noun",
+    "arg2_case": "nomn",
+    "id": 4,
+    "arg1_pos": "noun",
+    "pattern": "arg2 относятся к arg1",
+    "arg1_num": "all",
+    "arg2_num": "all",
+    "arg1_case": "datv"
+  }
+}

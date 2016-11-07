@@ -60,11 +60,17 @@ def main():
         print("\nInstance Extractor evaluationg step begin")
         ontology = instanceExtractor.evaluate(ontology, processedTextsPath)
         print("\nPattern Extractor learning step begin")
-        promotedPatternsDict, promotedPatternsPool = patternExtractor.learn(ontology, processedTextsPath)
+        promotedPatternsDict, promotedPatternsPool = patternExtractor.learn(patternsPool, ontology, processedTextsPath)
         print("\nPattern Extractor evaluationg step begin")
         patternsPool, ontology = patternExtractor.evaluate(ontology, patternsPool, promotedPatternsPool, promotedPatternsDict, processedTextsPath)
+
+        print("Saving ontology/patternsPool")
         ontology.toJSON(ontologyJSON)
         patternsPool.toJSON(patternsPoolJSON)
+
+        print("Clear promoted pattern pool and dictionary")
+        promotedPatternsPool.clear()
+        promotedPatternsDict = dict()
 
 
 if __name__ == "__main__":

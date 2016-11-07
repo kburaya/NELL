@@ -26,6 +26,7 @@ class PatternsPool:
     def saveToFile(self, file):
         pass
 
+
     def getPatternByID(self, id):
         for pattern in self.patterns:
             if pattern.id == id:
@@ -52,3 +53,13 @@ class PatternsPool:
         with open(file, 'w') as data:
             json.dump(patternsJSON, data, ensure_ascii=False)
         return
+
+
+    def clear(self):
+        self.patterns = list()
+
+
+    def get_pattern_by_string(self, pattern_string):
+        for pattern in self.patterns:
+            if pattern.pattern == pattern_string:
+                return pattern

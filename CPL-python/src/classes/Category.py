@@ -34,3 +34,16 @@ class Category:
                 return False
         self.extractionPatterns.append(pattern.id)
         return True
+
+    def check_if_pattern_exists(self, pattern_string, pattern_pool):
+        # check if we found existing pattern, then we need to skip it
+        for pattern_id in self.extractionPatterns:
+            pattern = pattern_pool.getPatternByID(pattern_id)
+            if pattern.pattern == pattern_string:
+                return True
+        return False
+
+    def check_if_promoted_instance_exists(self, promoted_instance):
+        if promoted_instance in self.instances:
+            return True
+        return False

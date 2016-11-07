@@ -41,6 +41,9 @@ class InstanceExtractor:
                 arg2 = sentence.words[arg2Pos]
                 for category in ontology.instances:
                     if (arg1.lexem == category.categoryName):
+                        if category.check_if_promoted_instance_exists(arg2.lexem):
+                            logging.info("Found existing promoted instance [%s] for category [%s]" % (arg2.lexem, category.categoryName))
+                            continue
                         if self.checkWordForPattern(arg1, pattern.arg1):
                             if self.checkWordForPattern(arg2, pattern.arg2):
                                 logging.info("Found new promoted instance [%s] in sentence [%s] with pattern '%s'" %
@@ -79,10 +82,11 @@ class InstanceExtractor:
         return False
 
 
-    def evaluate(self, ontology, processedTextsPath, treshold = 0):
+    def evaluate(self, ontology, processedTextsPath, treshold = 3):
         print('\nInstance Extractor. Evaluating step.')
         ngrams_dictionary = load_dictionary('ngrams_dictionary.pkl')
         for instance in ontology.instances:
+            _treshold = treshold
             precision = dict()
             for promotedInstance in instance.promotedInstances:
                 numOfCoOccurence = instance.promotedInstances[promotedInstance]
@@ -90,19 +94,15 @@ class InstanceExtractor:
                 precision[promotedInstance] = numOfCoOccurence / numInText
             precision = SortedDict(precision)
 
-            i = len(precision) - treshold - 1
-            for item in precision:
-                if i <= 0:
-                    break
-                del precision[item]
-                i -= 1
-
-
             instance.promotedInstances = dict()
             for promotedInstance in precision:
+                if _treshold == 0:
+                    break
                 if instance.addPromotedInstance(promotedInstance):
                     logging.info("Adding new instance [%s] to Category [%s] with precision value [%s]" %
                                 (promotedInstance, instance.categoryName, str(precision[promotedInstance])))
+                    _treshold -= 1
+
         return ontology
 
 def findNumberOfInstanceInText(instance, processedTextsPath):
