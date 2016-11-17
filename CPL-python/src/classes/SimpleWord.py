@@ -1,8 +1,16 @@
 import string
 
 class SimpleWord:
-    isPunctuation = False
+    # One word of a Sentence.
+
+    isPunctuation = False #: @type: Boolean
+
     def __init__(self, word, morph):
+        """
+        Constructor.
+        @type word: String
+        @type morph: MorphAnalyzer
+        """
         if word == None:
             return
 
@@ -13,13 +21,22 @@ class SimpleWord:
             return
 
         p = morph.parse(word)
-        self.pos = p[0].tag.POS
-        self.case = p[0].tag.case
-        self.lexem = p[0].normal_form
-        self.number = p[0].tag.number
+        self.pos = p[0].tag.POS #: @type: String
+        self.case = p[0].tag.case #: @type: String
+        self.lexem = p[0].normal_form #: @type: String
+        self.number = p[0].tag.number #: @type: String
 
 
     def fromJSON(self, wordJSON):
+        """
+        Get SimlpeWord from json.
+
+        @type  wordJSON: jsonObject
+        @param wordJSON: json of a word
+
+        @rtype: SimpleWord
+        @return: self
+        """
         self.original = wordJSON['original']
         if wordJSON['isPunctuation']:
             self.isPunctuation = True

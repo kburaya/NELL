@@ -11,9 +11,14 @@ class ProcessedText:
     """
     Makes ProcessedText structure from each file
     """
-    sentences = list()
+    sentences = list() #: @type: List<Sentence>
 
     def __init__(self, file, morph):
+        """
+        Constructor.
+        @type file: String
+        @type morph: MorphAnalyzer
+        """
         if file == None:
             return
         text = open(file, 'r').read()
@@ -27,6 +32,13 @@ class ProcessedText:
 
 
     def toJSON(self, file):
+        """
+        Save ProcessedText to json.
+
+        @type file: String
+        @param file: full path of file to save into
+        """
+
         _json = dict()
         for i in range(0, len(self.sentences)):
             _json[i] = dict()
@@ -48,6 +60,16 @@ class ProcessedText:
 
     @classmethod
     def fromJSON(self, file):
+        """
+        Constructor.
+        Get ProcessedText from json.
+
+        @type  file: String
+        @param file: full path to file
+
+        @rtype: ProcessedText
+        @return: self
+        """
         with open(file, 'r') as data:
             _json = json.load(data)
         self.sentences = list()

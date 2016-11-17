@@ -16,6 +16,22 @@ class InstanceExtractor:
 
 
     def learn(self, patternsPool, ontology, processedTextsPath):
+        """
+        Learning step of Instance extractor. Finds promoted instances for Categories in Ontology.
+        Updates the promotedInstances dict of Category if found.
+
+        @type patternsPool: PatternsPool
+        @param patternsPool: Exciting patterns pool
+
+        @type ontology: Ontology
+        @param ontology: Exciting ontology to update
+
+        @type processedTextsPath: String
+        @param processedTextsPath: path to processed texts directory
+
+        @rtype: Ontology
+        @return: updated Ontology with new instances for exciting categories or given Ontology if nothing found
+        """
         print('\nInstance Extractor. Learning step')
         files = [f for f in os.listdir(processedTextsPath) if os.path.isfile(os.path.join(processedTextsPath, f))]
         for file in tqdm(files):
@@ -30,6 +46,22 @@ class InstanceExtractor:
 
 
     def findPatternInSentence(self, pattern, sentence, ontology):
+        """
+        Finds given pattern in given sentence.
+        Updates the promotedInstances dict of Category from ontology if found.
+
+        @type pattern: Pattern
+        @param pattern: Pattern to find
+
+        @type sentence: Sentence
+        @param sentence: Sentence to find in
+
+        @type ontology: Ontology
+        @param ontology: Ontology to update
+
+        @rtype: Ontology
+        @return: Updated Ontology or given Ontology if nothing found.
+        """
         patternString = nltk.word_tokenize(pattern.pattern)
         for i in range(0, len(sentence.words) - len(patternString) + 1):
             arg1Pos, arg2Pos = self.checkIfPatternExists(sentence.words[i:(len(patternString))], pattern)
@@ -57,6 +89,18 @@ class InstanceExtractor:
 
 
     def checkIfPatternExists(self, sentencePart, pattern):
+        """
+        Finds pattern in sentence part and returns positions of arg1 and arg2 if succeeded.
+
+        @type sentencePart: List<SimpleWord>
+        @param sentencePart: part of sentence to find in
+
+        @type pattern: Pattern
+        @param pattern: Pattern to find
+
+        @rtype: tuple(Integer|None, Integer|None)
+        @return: positions of arg1 and arg2 of given pattern if succeeded (one of them can be None), (None,None) otherwise
+        """
         flag, arg1Pos, arg2Pos = True, None, None
         _pattern = nltk.word_tokenize(pattern.pattern)
         for i in range(0, len(sentencePart)):
@@ -73,6 +117,18 @@ class InstanceExtractor:
 
 
     def checkWordForPattern(self, word, patternWord):
+        """
+        Checks if word suitable for pattern by case, pos and number.
+
+        @type word: SimpleWord
+        @param word: word to check
+
+        @type patternWord: PatternTemplateWord
+        @param patternWord: pattern word to check equals with
+
+        @rtype: Boolean
+        @return: if suitable
+        """
         try:
             if (word.case.lower() == patternWord.case.lower()) and (word.pos.lower() == patternWord.pos.lower()):
                 if ((word.number.lower()) == patternWord.number.lower()) or (patternWord.number == 'all'):
@@ -83,6 +139,22 @@ class InstanceExtractor:
 
 
     def evaluate(self, ontology, processedTextsPath, treshold = 3):
+        """
+        Evaluating step of Instance Extractor. Chooses best promoted instances using precision score
+        and adds them to Category in given Ontology. Precision: (num in text instance with Category / num in text).
+
+        @type ontology: Ontology
+        @param ontology: Ontology to update
+
+        @type processedTextsPath: String
+        @param processedTextsPath: path to processed texts folder
+
+        @type treshold: Integer
+        @param treshold: number of instances to add by step
+
+        @rtype: Ontology
+        @return: updated Ontology with new instances if found or given one otherwise
+        """
         print('\nInstance Extractor. Evaluating step.')
         ngrams_dictionary = load_dictionary('ngrams_dictionary.pkl')
         for instance in ontology.instances:
@@ -105,6 +177,8 @@ class InstanceExtractor:
 
         return ontology
 
+
+#FIXME seems need to delete this
 def findNumberOfInstanceInText(instance, processedTextsPath):
     count = 0
     files = [f for f in os.listdir(processedTextsPath) if os.path.isfile(os.path.join(processedTextsPath, f))]
@@ -121,6 +195,15 @@ def findNumberOfInstanceInText(instance, processedTextsPath):
 
 
 def load_dictionary(file):
+    """
+    Loads preprocessed ngrams dictionary.
+
+    @type file: String
+    @param file: path to preprocessed file
+
+    @rtype: Dictionary<String, Integer>
+    @return: preprocessed dictionary of nums of occurrence for ngrams
+    """
     with open(file, 'rb') as f:
         obj = pickle.load(f)
     return obj

@@ -17,6 +17,23 @@ class PatternExtractor:
 
 
     def learn(self, patternsPool, ontology, processedTextsPath):
+        """
+        Learning step of PatternExtractor. Finds promoted patterns in text using instances from ontology.
+        Collects them into promotedPatternsPool. Calculates num of occurrence in text for promoted patterns.
+
+        @type patternsPool: PatternsPool
+        @param patternsPool: Pool of exciting patterns
+
+        @type ontology: Ontology
+        @param ontology: exciting ontology
+
+        @type processedTextsPath: String
+        @param processedTextsPath: path to processed texts folder
+
+        @rtype: Dictionary<String, Dictionary<String, Integer>>, PatternsPool
+        @return: Dictionary of num of occurrence in text for patterns with categories from ontology,
+        PatternsPool of found promoted patterns.
+        """
         print ('\n Pattern Extractor. Learning step. ')
         logging.info('\n Pattern Extractor. Learning step. ')
         promotedPatternsDict = dict()
@@ -70,8 +87,31 @@ class PatternExtractor:
 
 
 
+    #FIXME processedTextsPath - DELETE
+    # TODO think how to rewrite this part
     def evaluate(self, ontology, patternsPool, promotedPatternsPool, promotedPatternsDict, processedTextsPath, treshold = 3):
-        # TODO think how to rewrite this part
+        """
+        Evaluating step of PatternExtractor. Chooses best promoted patterns using precision score
+        and adds them to exciting PatternsPool. Precision: (num in text pattern with Category / num in text).
+
+        @type ontology: Ontology
+        @param ontology: exciting ontology
+
+        @type patternsPool: PatternsPool
+        @param patternsPool: exciting PatternsPool to update
+
+        @type promotedPatternsPool: PatternsPool
+        @param promotedPatternsPool: PatternsPool of promoted patterns
+
+        @type promotedPatternsDict: Dictionary<String, Dictionary<String, Integer>>
+        @param promotedPatternsDict: Dictionary of num of occurrence in text for patterns with categories from ontology
+
+        @type treshold: Integer
+        @param treshold: number of patterns to add by step
+
+        @rtype: PatternsPool, Ontology(WHY??)
+        @return: updated PatternsPool with new patterns if found.
+        """
         print('Pattern Extractor. Evaluating step.')
         logging.info('Pattern Extractor. Evaluating step.')
         ngrams_dictionary = load_dictionary('ngrams_dictionary.pkl')
@@ -126,6 +166,18 @@ class PatternExtractor:
 
 
     def findPatternInSentence(self, sentence, instance):
+        """
+        Finds pattern in sentence with give Category.
+
+        @type sentence: Sentence
+        @param sentence: sentence to find in
+
+        @type instance: Category
+        @param instance: category to find with
+
+        @rtype: tuple(Integer|None, Integer|None)
+        @return: Positions of arg1 and arg2 if exists.
+        """
         pos1, pos2 = None, None
         arg1 = instance.categoryName
         for arg2 in instance.instances:
@@ -136,7 +188,17 @@ class PatternExtractor:
         return pos1, pos2
 
 
+#FIXME duplicate method - already exists in InstanceExtractor
 def load_dictionary(file):
+    """
+    Loads preprocessed ngrams dictionary.
+
+    @type file: String
+    @param file: path to preprocessed file
+
+    @rtype: Dictionary<String, Integer>
+    @return: preprocessed dictionary of nums of occurrence for ngrams
+    """
     with open(file, 'rb') as f:
         obj = pickle.load(f)
     return obj

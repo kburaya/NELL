@@ -8,9 +8,14 @@ mystem = Mystem()
 
 
 class Ontology:
-    instances = list()
+
+    instances = list() #: @type: List<Category>
 
     def __init__(self, file):
+        """
+        Constructor.
+        @type file: String
+        """
         file = pd.read_excel(file)
         self.instances = list()
         for index, row in file.iterrows():
@@ -29,6 +34,12 @@ class Ontology:
 
 
     def toJSON(self, file):
+        """
+        Save Ontology to json.
+
+        @type file: String
+        @param file: Full path of file to save into
+        """
         ontologyJSON = dict()
         for i in range(0, len(self.instances)):
             ontologyJSON[i] = dict()
