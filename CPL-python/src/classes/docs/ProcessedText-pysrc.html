@@ -52,22 +52,22 @@
 </table>
 <h1 class="epydoc">Source Code for <a href="ProcessedText-module.html">Module ProcessedText</a></h1>
 <pre class="py-src">
-<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">nltk</tt> </tt>
-<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">pymorphy2</tt> </tt>
-<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">pickle</tt> </tt>
-<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-0" class="py-name" targets="Variable Sentence.Sentence.string=Sentence.Sentence-class.html#string"><a title="Sentence.Sentence.string" class="py-name" href="#" onclick="return doclink('link-0', 'string', 'link-0');">string</a></tt> </tt>
-<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">tqdm</tt> <tt class="py-keyword">import</tt> <tt class="py-name">tqdm</tt> </tt>
-<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-1" class="py-name" targets="Module Sentence=Sentence-module.html,Class Sentence.Sentence=Sentence.Sentence-class.html"><a title="Sentence
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-docstring">Makes ProcessedText structure from each file</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">nltk</tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">pymorphy2</tt> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">pickle</tt> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-0" class="py-name" targets="Variable Sentence.Sentence.string=Sentence.Sentence-class.html#string"><a title="Sentence.Sentence.string" class="py-name" href="#" onclick="return doclink('link-0', 'string', 'link-0');">string</a></tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">tqdm</tt> <tt class="py-keyword">import</tt> <tt class="py-name">tqdm</tt> </tt>
+<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-1" class="py-name" targets="Module Sentence=Sentence-module.html,Class Sentence.Sentence=Sentence.Sentence-class.html"><a title="Sentence
 Sentence.Sentence" class="py-name" href="#" onclick="return doclink('link-1', 'Sentence', 'link-1');">Sentence</a></tt> <tt class="py-keyword">import</tt> <tt id="link-2" class="py-name"><a title="Sentence
 Sentence.Sentence" class="py-name" href="#" onclick="return doclink('link-2', 'Sentence', 'link-1');">Sentence</a></tt> </tt>
-<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">json</tt> </tt>
-<a name="ProcessedText"></a><div id="ProcessedText-def"><a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"> </tt>
-<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"> </tt>
-<a name="L10"></a><tt class="py-lineno">10</tt> <a class="py-toggle" href="#" id="ProcessedText-toggle" onclick="return toggle('ProcessedText');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="ProcessedText.ProcessedText-class.html">ProcessedText</a><tt class="py-op">:</tt> </tt>
-</div><div id="ProcessedText-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="ProcessedText-expanded"><a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
-<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"><tt class="py-docstring">    Makes ProcessedText structure from each file</tt> </tt>
-<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
-<a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line">    <tt id="link-3" class="py-name" targets="Variable ProcessedText.ProcessedText.sentences=ProcessedText.ProcessedText-class.html#sentences"><a title="ProcessedText.ProcessedText.sentences" class="py-name" href="#" onclick="return doclink('link-3', 'sentences', 'link-3');">sentences</a></tt> <tt class="py-op">=</tt> <tt class="py-name">list</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> <tt class="py-comment">#: @type: List&lt;Sentence&gt;</tt> </tt>
+<a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">json</tt> </tt>
+<a name="ProcessedText"></a><div id="ProcessedText-def"><a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line"> </tt>
+<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt> <a class="py-toggle" href="#" id="ProcessedText-toggle" onclick="return toggle('ProcessedText');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="ProcessedText.ProcessedText-class.html">ProcessedText</a><tt class="py-op">:</tt> </tt>
+</div><div id="ProcessedText-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="ProcessedText-expanded"><a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line">    <tt id="link-3" class="py-name" targets="Variable ProcessedText.ProcessedText.sentences=ProcessedText.ProcessedText-class.html#sentences"><a title="ProcessedText.ProcessedText.sentences" class="py-name" href="#" onclick="return doclink('link-3', 'sentences', 'link-3');">sentences</a></tt> <tt class="py-op">=</tt> <tt class="py-name">list</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> <tt class="py-comment">#: @type: List&lt;Sentence&gt;</tt> </tt>
 <a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line"> </tt>
 <a name="ProcessedText.__init__"></a><div id="ProcessedText.__init__-def"><a name="L16"></a><tt class="py-lineno">16</tt> <a class="py-toggle" href="#" id="ProcessedText.__init__-toggle" onclick="return toggle('ProcessedText.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="ProcessedText.ProcessedText-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">file</tt><tt class="py-op">,</tt> <tt class="py-param">morph</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
 </div><div id="ProcessedText.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="ProcessedText.__init__-expanded"><a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
@@ -168,7 +168,7 @@ expandto(location.href);
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Nov 18 01:20:21 2016
+    Generated by Epydoc 3.0.1 on Fri Nov 18 01:28:49 2016
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

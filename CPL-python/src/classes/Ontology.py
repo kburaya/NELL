@@ -1,3 +1,6 @@
+"""
+Ontology.
+"""
 import sys
 sys.path.insert(0, '../src/classes')
 from Category import Category

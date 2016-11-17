@@ -1,3 +1,6 @@
+"""
+Pool of Patterns
+"""
 import sys
 import pandas as pd
 sys.path.insert(0, '../src/classes')
@@ -7,7 +10,6 @@ import json
 
 
 class PatternsPool:
-    # Pool of Patterns
 
     maxID = 1
     """

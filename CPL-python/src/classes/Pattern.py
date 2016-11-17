@@ -1,5 +1,7 @@
+"""
+Pattern
+"""
 class Pattern:
-    # Pattern
     id = 0 #: @type: Integer
     pattern = '' #: @type: PatternTemplateWord
     arg1, arg2 = '', '' #: @type: PatterTemplateWord

@@ -1,9 +1,11 @@
+"""
+One sentence of ProcessedText
+"""
 import nltk
 from SimpleWord import SimpleWord
 
 
 class Sentence:
-    # One sentence of ProcessedText
 
     words = list() #: @type: List<SimpleWord>
     string = '' #: @type: String

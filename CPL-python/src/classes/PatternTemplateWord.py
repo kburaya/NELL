@@ -1,10 +1,8 @@
-'''
-Init function for Patterns
-'''
-
+"""
+One word of Pattern (arg1 and arg2)
+"""
 
 class PatternTemplateWord:
-    # One word of Pattern (arg1 and arg2)
 
     def __init__(self, case, number, pos):
         """

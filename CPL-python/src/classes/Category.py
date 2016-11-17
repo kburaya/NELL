@@ -1,3 +1,7 @@
+"""
+Category.
+"""
+
 import sys
 sys.path.insert(0, '../src/classes')
 import pandas as pd

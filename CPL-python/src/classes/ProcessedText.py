@@ -1,3 +1,6 @@
+"""
+Makes ProcessedText structure from each file
+"""
 import nltk
 import pymorphy2
 import pickle
@@ -8,9 +11,6 @@ import json
 
 
 class ProcessedText:
-    """
-    Makes ProcessedText structure from each file
-    """
     sentences = list() #: @type: List<Sentence>
 
     def __init__(self, file, morph):

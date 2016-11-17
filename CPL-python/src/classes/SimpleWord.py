@@ -1,7 +1,11 @@
+"""
+One word of a Sentence.
+"""
 import string
 
+
 class SimpleWord:
-    # One word of a Sentence.
+
 
     isPunctuation = False #: @type: Boolean
 
