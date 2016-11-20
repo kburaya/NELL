@@ -1,5 +1,6 @@
 """
 One sentence of ProcessedText
+Contains a list of words in sentence and a string representing the sentence.
 """
 import nltk
 from SimpleWord import SimpleWord

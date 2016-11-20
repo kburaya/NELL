@@ -1,5 +1,6 @@
 """
 Ontology.
+Contains a list of categories to work with.
 """
 import sys
 sys.path.insert(0, '../src/classes')

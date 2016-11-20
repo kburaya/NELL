@@ -1,5 +1,6 @@
 """
 Pool of Patterns
+Contains a list of patterns to work with.
 """
 import sys
 import pandas as pd
@@ -35,6 +36,7 @@ class PatternsPool:
             arg2 = PatternTemplateWord(row['arg2_case'], row['arg2_num'], row['arg2_pos'])
             self.patterns.append(Pattern(id, patternString, arg1, arg2))
 
+    #FIXME
     def saveToFile(self, file):
         pass
 

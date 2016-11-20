@@ -1,5 +1,6 @@
 """
 Category.
+Contains instances and extraction patterns for category with specified name.
 """
 
 import sys

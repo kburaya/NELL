@@ -1,5 +1,6 @@
 """
 Makes ProcessedText structure from each file
+Contains a list of sentences in text part.
 """
 import nltk
 import pymorphy2

@@ -1,3 +1,8 @@
+"""
+PatternExtractor is a second part of CPL algorithm. It finds new patterns during LEARN step
+and then adding the most reliable ones during EVALUATE step.
+"""
+
 from ProcessedText import ProcessedText
 from tqdm import tqdm
 from PatternTemplateWord import PatternTemplateWord

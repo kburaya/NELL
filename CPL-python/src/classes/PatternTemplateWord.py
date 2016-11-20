@@ -1,5 +1,6 @@
 """
 One word of Pattern (arg1 and arg2)
+Contains a pos, number and case of an arg in pattern.
 """
 
 class PatternTemplateWord:

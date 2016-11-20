@@ -1,9 +1,10 @@
 """
 Pattern
+Contains arg1, arg2, id of the pattern and a string representing it.
 """
 class Pattern:
     id = 0 #: @type: Integer
-    pattern = '' #: @type: PatternTemplateWord
+    pattern = '' #: @type: String
     arg1, arg2 = '', '' #: @type: PatterTemplateWord
 
     def __init__(self, id, patternString, arg1, arg2):

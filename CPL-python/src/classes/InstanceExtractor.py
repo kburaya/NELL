@@ -1,3 +1,8 @@
+"""
+InstanceExtractor is a first part of CPL algorithm. It finds new instances during LEARN step
+and then adding the most reliable ones during EVALUATE step.
+"""
+
 import os
 import pickle
 import nltk

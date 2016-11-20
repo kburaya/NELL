@@ -1,5 +1,6 @@
 """
 One word of a Sentence.
+Contains part of speech(noun, adjf, ...), case(nomn, gent, datv ...), lexem(normal form) and number(sing, plur) for specified word.
 """
 import string
 
