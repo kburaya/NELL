@@ -1,0 +1,6 @@
+// db.getCollection('indexes').remove({})
+db.getCollection('ontology').remove({})
+db.getCollection('patterns').remove({})
+// db.getCollection('processed_files').remove({})
+db.getCollection('promoted_instances').remove({})
+// db.getCollection('sentences').remove({})
