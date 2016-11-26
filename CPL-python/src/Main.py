@@ -36,43 +36,30 @@ def inizialize():
 
 def preprocess_files():
     files = [f for f in os.listdir(texts_path) if os.path.isfile(os.path.join(texts_path, f))]
-    print ('try to find unprocessed text')
+    print ('\ntry to find unprocessed text')
     for file in tqdm(files):
         if db['processed_files'].find({'name':file}).count() != 0:
+            logging.info('File [%s] is already in database, skipping' % file)
             continue
         file_path = texts_path + '/' + file
         helper.process_sentences_from_file(file_path, db)
-        break
+        db['processed_files'].insert_one({'name':file})
+        logging.info('File [%s] was sucessfully added to database' % file)
 
 def main():
     connect_to_database()
     inizialize()
-    preprocess_files()
-
-
-    # instanceExtractor = InstanceExtractor()
-    # patternExtractor = PatternExtractor()
-    # for iteration in range(1, ITERATIONS):
-    #     logging.info('Iteration %s begin' % (str(iteration)))
-    #     print('\nIteration %s begin' % (str(iteration)))
-    #
-    #
-    #     print("\nInstance Extractor learning step begin")
-    #     ontology = instanceExtractor.learn(patternsPool, ontology, processedTextsPath)
-    #     print("\nInstance Extractor evaluationg step begin")
-    #     ontology = instanceExtractor.evaluate(ontology, processedTextsPath)
-    #     print("\nPattern Extractor learning step begin")
-    #     promotedPatternsDict, promotedPatternsPool = patternExtractor.learn(patternsPool, ontology, processedTextsPath)
-    #     print("\nPattern Extractor evaluationg step begin")
-    #     patternsPool, ontology = patternExtractor.evaluate(ontology, patternsPool, promotedPatternsPool, promotedPatternsDict, processedTextsPath)
-    #
-    #     print("Saving ontology/patternsPool")
-    #     ontology.toJSON(ontologyJSON)
-    #     patternsPool.toJSON(patternsPoolJSON)
-    #
-    #     print("Clear promoted pattern pool and dictionary")
-    #     promotedPatternsPool.clear()
-    #     promotedPatternsDict = dict()
+    # preprocess_files()
+    # helper.build_category_index(db)
+    treshold = 50
+    for iteration in range(1, 11):
+        print ('Iteration [%s] begins' % str(iteration))
+        logging.info('=============ITERATION [%s] BEGINS=============' % str(iteration))
+        helper.extract_instances(db, iteration)
+        helper.evaluate_instances(db, treshold, iteration)
+        helper.extract_patterns(db, iteration)
+        helper.evaluate_patterns(db, treshold, iteration)
+        helper.zero_coocurence_count(db)
 
 
 if __name__ == "__main__":
