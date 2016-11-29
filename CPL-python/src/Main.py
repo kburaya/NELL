@@ -28,8 +28,8 @@ def connect_to_database():
 def inizialize():
     # Read initial ontology and patterns
     logging.basicConfig(filename=log_path, filemode='w', level=logging.DEBUG, format='%(asctime)s %(message)s')
-    helper.get_patterns_from_file(patterns_pool_path, db)
-    logging.info("patterns pool inizializated")
+    # helper.get_patterns_from_file(patterns_pool_path, db)
+    # logging.info("patterns pool inizializated")
     helper.get_ontology_from_file(ontology_path, db)
     logging.info("ontology inizializated")
 
@@ -51,14 +51,14 @@ def main():
     inizialize()
     # preprocess_files()
     # helper.build_category_index(db)
-    treshold = 50
+    # helper.build_pattern_index(db)
     for iteration in range(1, 11):
         print ('Iteration [%s] begins' % str(iteration))
         logging.info('=============ITERATION [%s] BEGINS=============' % str(iteration))
         helper.extract_instances(db, iteration)
-        helper.evaluate_instances(db, treshold, iteration)
+        helper.evaluate_instances(db, iteration)
         helper.extract_patterns(db, iteration)
-        helper.evaluate_patterns(db, treshold, iteration)
+        helper.evaluate_patterns(db, iteration)
         helper.zero_coocurence_count(db)
 
 
