@@ -170,7 +170,7 @@ def evaluate_instances(db, treshold, iteration,ins_ngrams, MODE):
 
         logging.info("Add [%s] new instances, delete [%s], stayed [%d] instances for category [%s]" % \
                      (str(new_instances), str(deleted_instances), stayed_instances, category['category_name']))
-
+    categories.close()
     return
 
 def check_if_pattern_exists_in_sentence(sentence, pattern_words_list):

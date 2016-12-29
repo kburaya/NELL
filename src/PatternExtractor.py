@@ -26,9 +26,6 @@ def extract_patterns(db, iteration=1):
             instances = db['promoted_instances'].find({'category_name': category['category_name'],
                                                        'used': True})
             sentence = db['sentences'].find_one({'_id': sentence_id})
-            if (sentence[
-                    'string'] == 'Toyota Avalon — полноразмерный автомобиль выпускающийся компанией Toyota с 1995 года.'):
-                x = 1001
             for instance in instances:
                 if check_word_in_sentence(sentence, instance['lexem']) != -1:
                     arg1_pos = check_word_in_sentence(sentence, category['category_name'])
@@ -116,6 +113,7 @@ def extract_patterns(db, iteration=1):
                         logging.info('Found new pattern [%s] for category [%s] found for instance [%s]' % \
                                      (promoted_pattern['string'], category['category_name'], instance['lexem']))
                         break
+    categories.close()
     return
 
 
@@ -202,6 +200,7 @@ def evaluate_patterns(db, treshold, iteration, tmpDict, MODE):
                                                     'iteration_deleted': iteration_deleted}})
         logging.info("Add [%d] new patterns, delete [%d], stayed [%d] patterns for category [%s]" % \
                      (new_patterns, deleted_patterns, stayed_patterns, category['category_name']))
+    categories.close()
     return
 
 def check_word_in_sentence(sentence, lexem):
