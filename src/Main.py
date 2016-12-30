@@ -4,7 +4,7 @@ import time
 
 sys.path.insert(0, '../src/')
 import logging
-import pymysql
+import pickle
 import nltk
 import os
 from tqdm import tqdm
@@ -47,6 +47,11 @@ def inizialize():
     logging.info("patterns pool inizializated")
     get_ontology_from_file(ontology_path, db)
     logging.info("ontology inizializated")
+
+def load_dictionary(file):
+    with open(file, 'rb') as f:
+        obj = pickle.load(f)
+    return obj
 
 def get_patterns_from_file(file, db):
     logging.info('Extracting initial patterns from file')
@@ -180,17 +185,27 @@ def calc_ngrams_instances(db):
 
 def main():
 
+    #FIXME count of elements in okl files
+    max_in_file = 1000000
+
+    #FIXME last indexes of pkl files
+    insIndex = 0
+    patIndex = 0
+
     ins_ngrams = dict()
     pat_ngrams = dict()
 
-    MODE = 1
+    ins_length = 0
+    pat_length = 0
+
+    MODE = 3
 
     connect_to_database()
     inizialize()
 
     #getting text from files and building indexes
-    #TextProcesser.build_indexes_sceleton(db)
-    #TextProcesser.preprocess_files(db)
+    TextProcesser.build_indexes_sceleton(db)
+    TextProcesser.preprocess_files(db)
 
 
     # slow method. saves ngrams to databse. too slow. I dont know how to make it faster.
@@ -205,6 +220,11 @@ def main():
         ins_ngrams = calc_ngrams_instances(db)
         print('ins_ngrams_length=' + str(len(ins_ngrams)))
 
+    # method using pkl files.
+    if MODE == 3:
+        pat_length = TextProcesser.ngrams_patterns_pkl(db, max_in_file, patIndex)
+        ins_length = TextProcesser.ngrams_instances_pkl(db, max_in_file, insIndex)
+
 
 
     treshold = 50
@@ -213,12 +233,12 @@ def main():
         print('Iteration [%s] begins' % str(iteration))
         logging.info('=============ITERATION [%s] BEGINS=============' % str(iteration))
         InstanceExtractor.extract_instances(db, iteration)
-        InstanceExtractor.evaluate_instances(db, treshold, iteration,ins_ngrams, MODE)
+        InstanceExtractor.evaluate_instances(db, treshold, iteration,ins_ngrams, MODE, ins_length)
         PatternExtractor.extract_patterns(db, iteration)
-        PatternExtractor.evaluate_patterns(db, treshold, iteration, pat_ngrams, MODE)
+        PatternExtractor.evaluate_patterns(db, treshold, iteration, pat_ngrams, MODE, pat_length)
         Cleaner.zero_coocurence_count(db)
         print('Iteration time: {:.3f} sec'.format(time.time() - startTime))
 
-
 if __name__ == "__main__":
     main()
+

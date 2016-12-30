@@ -14,9 +14,11 @@ morph = pymorphy2.MorphAnalyzer()
 category_pattern_dict = dict()
 INF = 100 * 100 * 100
 
-MODE = 1
 
-
+def load_dictionary(file):
+    with open(file, 'rb') as f:
+        obj = pickle.load(f)
+    return obj
 
 def extract_patterns(db, iteration=1):
     logging.info('Begin pattern extraction')
@@ -117,7 +119,7 @@ def extract_patterns(db, iteration=1):
     return
 
 
-def evaluate_patterns(db, treshold, iteration, tmpDict, MODE):
+def evaluate_patterns(db, treshold, iteration, tmpDict, MODE, dict_length):
     logging.info('Begin patterns evaluation')
     patterns = db['patterns'].find()
     for pattern in patterns:
@@ -146,6 +148,19 @@ def evaluate_patterns(db, treshold, iteration, tmpDict, MODE):
             if db['ngrams_patterns'].find({'lexem' : pattern_string}).count() > 0 :
                 precision = pattern['coocurence_count'] / db['ngrams_patterns'].find_one({'lexem' : pattern_string})['count']
             else:
+                logging.error('Cannot find words %s in ngrams_dict' % pattern_string)
+                precision = 0
+        if MODE == 3:
+            flag = False
+            counter = 0
+            for i in range(dict_length):
+                x = load_dictionary('ngrams_dictionary_for_patterns' + str(i) + '.pkl')
+                try:
+                    precision = pattern['coocurence_count'] / x[pattern_string]
+                    flag = True
+                except:
+                    counter += 1
+            if counter == dict_length:
                 logging.error('Cannot find words %s in ngrams_dict' % pattern_string)
                 precision = 0
         db['patterns'].update({'_id': pattern['_id']},

@@ -14,10 +14,11 @@ morph = pymorphy2.MorphAnalyzer()
 category_pattern_dict = dict()
 INF = 100 * 100 * 100
 
-MODE = 1
 
-
-
+def load_dictionary(file):
+    with open(file, 'rb') as f:
+        obj = pickle.load(f)
+    return obj
 
 def extract_instances(db, iteration):
     # iterate throw sentences, that contains categories
@@ -84,7 +85,7 @@ def extract_instances(db, iteration):
     return
 
 
-def evaluate_instances(db, treshold, iteration,ins_ngrams, MODE):
+def evaluate_instances(db, treshold, iteration,ins_ngrams, MODE, dict_length):
     logging.info('Begin instances evaluating')
     promoted_instances = db['promoted_instances'].find()
     for instance in promoted_instances:
@@ -101,6 +102,19 @@ def evaluate_instances(db, treshold, iteration,ins_ngrams, MODE):
                 if db['ngrams_instances'].find({'lexem' : instance['lexem'].lower()}).count() > 0:
                     precision = instance['count_in_text'] / db['ngrams_instances'].find_one({'lexem' : instance['lexem'].lower()})['count']
                 else :
+                    logging.error('Cannot find words %s in ngrams dictionary for instances' % instance['lexem'])
+                    precision = 0
+            if MODE == 3:
+                flag = False
+                counter = 0
+                for i in range(dict_length):
+                    x = load_dictionary('ngrams_dictionary_for_instances' + str(i) + '.pkl')
+                    try:
+                        precision = instance['count_in_text'] / x[instance['lexem'].lower()]
+                        flag = True
+                    except:
+                        counter += 1
+                if counter == dict_length:
                     logging.error('Cannot find words %s in ngrams dictionary for instances' % instance['lexem'])
                     precision = 0
             logging.info("Precision for promoted instance [%s] for category [%s] updated from [%s] to [%s]" % \

@@ -198,3 +198,159 @@ def ngrams_for_patterns(db):
     sentences.close()
     print('Elapsed time: {:.3f} sec'.format(time.time() - startTime))
     return
+
+
+def ngrams_patterns_pkl(db, ngrams_in_file, lastPart):
+    nowPart = lastPart
+    startTime = time.time()
+    print('calculating ngrams for patterns')
+    tmpDict = dict()
+    tmpLexems = list()
+    counter = 0
+    sentences = db['sentences'].find(timeout=False)
+    for sentence in sentences:
+        tWords = sentence['words']
+        words = list()
+        for w in tWords:
+            words.append(w['original'])
+        for i in range(1, 3 + 1):
+            ngrams = nltk.ngrams(words, i)
+            for ngram in ngrams:
+                s = ''
+                for word in ngram:
+                    s += word
+                    s += ' '
+                s = s[:-1].lower()
+                lexem = s
+                counter += 1
+                try:
+                    tmpDict[lexem] += 1
+                except:
+                    tmpDict[lexem] = 1
+                    tmpLexems.append(lexem)
+                if len(tmpDict) > ngrams_in_file:
+
+                    toSave = dict()
+                    alreadySaved = list()
+
+                    for i in range(nowPart):
+                        x = load_dictionary('ngrams_dictionary_for_patterns' + str(i) + '.pkl')
+                        for lex in tmpLexems:
+                            try:
+                                r = x[lex]
+                                x[lex] = x[lex] + tmpDict[lex]
+                                alreadySaved.append(lex)
+                            except:
+                                r = 1
+                        with open('ngrams_dictionary_for_patterns' + str(i) + '.pkl', 'wb') as f:
+                            pickle.dump(x, f)
+                    for lex in tmpLexems:
+                        if not lex in alreadySaved:
+                            toSave[lex] = tmpDict[lex]
+                    with open('ngrams_dictionary_for_patterns' + str(nowPart) + '.pkl', 'wb') as f:
+                        pickle.dump(toSave, f)
+                    nowPart += 1
+                    tmpDict = dict()
+                    tmpLexems = list()
+    # save
+    toSave = dict()
+    alreadySaved = list()
+
+    for i in range(nowPart):
+        x = load_dictionary('ngrams_dictionary_for_patterns' + str(i) + '.pkl')
+        for lex in tmpLexems:
+            try:
+                r = x[lex]
+                x[lex] = x[lex] + tmpDict[lex]
+                alreadySaved.append(lex)
+            except:
+                r = 1
+        with open('ngrams_dictionary_for_patterns' + str(i) + '.pkl', 'wb') as f:
+            pickle.dump(x, f)
+    for lex in tmpLexems:
+        if not lex in alreadySaved:
+            toSave[lex] = tmpDict[lex]
+    with open('ngrams_dictionary_for_patterns' + str(nowPart) + '.pkl', 'wb') as f:
+        pickle.dump(toSave, f)
+    nowPart += 1
+    tmpDict = dict()
+    tmpLexems = list()
+    sentences.close()
+    print('Elapsed time: {:.3f} sec'.format(time.time() - startTime))
+    return nowPart
+
+
+def ngrams_instances_pkl(db, ngrams_in_file, lastPart):
+    nowPart = lastPart
+    startTime = time.time()
+    print('calculating ngrams for instances')
+    tmpDict = dict()
+    tmpLexems = list()
+    counter = 0
+    sentences = db['sentences'].find(timeout=False)
+    for sentence in sentences:
+        words = sentence['words']
+        for word in words:
+            lexem = word['lexem']
+            counter += 1
+            try:
+                tmpDict[lexem] += 1
+            except:
+                tmpDict[lexem] = 1
+                tmpLexems.append(lexem)
+                if len(tmpDict) > ngrams_in_file:
+
+                    toSave = dict()
+                    alreadySaved = list()
+
+                    for i in range(nowPart):
+                        x = load_dictionary('ngrams_dictionary_for_instances' + str(i) + '.pkl')
+                        for lex in tmpLexems:
+                            try:
+                                r = x[lex]
+                                x[lex] = x[lex] + tmpDict[lex]
+                                alreadySaved.append(lex)
+                            except:
+                                r = 1
+                        with open('ngrams_dictionary_for_instances' + str(i) + '.pkl', 'wb') as f:
+                            pickle.dump(x, f)
+                    for lex in tmpLexems:
+                        if not lex in alreadySaved:
+                            toSave[lex] = tmpDict[lex]
+                    with open('ngrams_dictionary_for_instances' + str(nowPart) + '.pkl', 'wb') as f:
+                        pickle.dump(toSave, f)
+                    nowPart += 1
+                    tmpDict = dict()
+                    tmpLexems = list()
+    # save
+    toSave = dict()
+    alreadySaved = list()
+
+    for i in range(nowPart):
+        x = load_dictionary('ngrams_dictionary_for_instances' + str(i) + '.pkl')
+        for lex in tmpLexems:
+            try:
+                r = x[lex]
+                x[lex] = x[lex] + tmpDict[lex]
+                alreadySaved.append(lex)
+            except:
+                r = 1
+        with open('ngrams_dictionary_for_instances' + str(i) + '.pkl', 'wb') as f:
+            pickle.dump(x, f)
+    for lex in tmpLexems:
+        if not lex in alreadySaved:
+            toSave[lex] = tmpDict[lex]
+    with open('ngrams_dictionary_for_instances' + str(nowPart) + '.pkl', 'wb') as f:
+        pickle.dump(toSave, f)
+    nowPart += 1
+    tmpDict = dict()
+    tmpLexems = list()
+    sentences.close()
+    print('Elapsed time: {:.3f} sec'.format(time.time() - startTime))
+    return nowPart
+
+
+def load_dictionary(file):
+    with open(file, 'rb') as f:
+        obj = pickle.load(f)
+    return obj
