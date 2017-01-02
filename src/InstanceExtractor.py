@@ -130,7 +130,7 @@ def evaluate_instances(db, treshold, iteration,ins_ngrams, MODE, dict_length):
     # all that will be out of 20 but was at list earlier will be deleted
     categories = db['ontology'].find(timeout=False)
     for category in categories:
-        size = treshold
+        treshold = db['ontology'].find_one({'_id': category['_id']})['max_instance_precision']
         promoted_instances_for_category = db['promoted_instances'].find({
             'category_name': category['category_name']}).sort('precision', pymongo.DESCENDING)
 
@@ -142,7 +142,7 @@ def evaluate_instances(db, treshold, iteration,ins_ngrams, MODE, dict_length):
                 stayed_instances += 1
                 continue
             # first [n] NOT INITIAL instances must be added
-            if size > 0:
+            if promoted_instance['precision'] >= treshold:
                 if promoted_instance['used']:
                     logging.info("Promoted instance [%s] stayed for category [%s] with precision [%s]" % \
                                  (promoted_instance['lexem'],
@@ -163,7 +163,11 @@ def evaluate_instances(db, treshold, iteration,ins_ngrams, MODE, dict_length):
                     db['promoted_instances'].update({'_id': promoted_instance['_id']},
                                                     {'$set': {'used': True,
                                                               'iteration_added': iteration_added}})
-                size -= 1
+                if category['max_instance_precision'] == 0.0:
+                    db['ontology'].update({'_id': category['_id']},
+                                          {'$set': {'max_instance_precision': promoted_instance['precision']}})
+                logging.info('Updated category [%s] precision to [%.2f]' % (
+                category['category_name'], promoted_instance['precision']))
 
             # other instances must be deleted if they are not in first [n]
             else:

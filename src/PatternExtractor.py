@@ -163,19 +163,21 @@ def evaluate_patterns(db, treshold, iteration, tmpDict, MODE, dict_length):
             if counter == dict_length:
                 logging.error('Cannot find words %s in ngrams_dict' % pattern_string)
                 precision = 0
+        if precision > 1:
+            precision = 1.0
         db['patterns'].update({'_id': pattern['_id']},
                               {'$set': {'precision': precision}})
 
     categories = db['ontology'].find(timeout = False)
     for category in categories:
-        size = treshold
+        treshold = db['ontology'].find_one({'_id': category['_id']})['max_pattern_precision']
         promoted_patterns_for_category = db['patterns'].find({
             'extracted_category_id': category['_id']}).sort('precision', pymongo.DESCENDING)
         new_patterns, deleted_patterns, stayed_patterns = 0, 0, 0
         for promoted_pattern in promoted_patterns_for_category:
             if promoted_pattern['extracted_category_id'] == -1:
                 continue
-            if size > 0:
+            if promoted_pattern['precision'] >= treshold:
                 if promoted_pattern['used']:
                     logging.info("Promoted pattern [%s] stayed for category [%s] with precision [%s]" % \
                                  (promoted_pattern['string'],
@@ -196,9 +198,12 @@ def evaluate_patterns(db, treshold, iteration, tmpDict, MODE, dict_length):
                     db['patterns'].update({'_id': promoted_pattern['_id']},
                                           {'$set': {'used': True,
                                                     'iteration_added': iteration_added}})
-                db['iteration_' + str(iteration)].insert({'pattern': promoted_pattern['string'],
-                                                              'category_name': category['category_name']})
-                size -= 1
+
+                if category['max_pattern_precision'] == 0.0:
+                    db['ontology'].update({'_id': category['_id']},
+                                          {'$set': {'max_pattern_precision': promoted_pattern['precision']}})
+                    logging.info('Updated category [%s] precision to [%.2f]' % \
+                                 (category['category_name'], promoted_pattern['precision']))
             else:
                 if promoted_pattern['used']:
                     logging.info("Promoted instance [%s] deleted for category [%s] with precision [%s]" % \

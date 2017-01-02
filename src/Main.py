@@ -112,6 +112,8 @@ def get_ontology_from_file(file, db):
                                                         s.isdigit()]
 
         ontology_category['promoted_patterns'] = list()
+        ontology_category['max_instance_precision'] = 0.0
+        ontology_category['max_pattern_precision'] = 0.0
 
         for instance in ontology_category['instances']:
             promoted_instance = dict()
@@ -186,7 +188,7 @@ def calc_ngrams_instances(db):
 def main():
 
     #FIXME count of elements in okl files
-    max_in_file = 1000000
+    max_in_file = 5000000
 
     #FIXME last indexes of pkl files
     insIndex = 0
@@ -204,8 +206,8 @@ def main():
     inizialize()
 
     #getting text from files and building indexes
-    TextProcesser.build_indexes_sceleton(db)
-    TextProcesser.preprocess_files(db)
+    #TextProcesser.build_indexes_sceleton(db)
+    #TextProcesser.preprocess_files(db)
 
 
     # slow method. saves ngrams to databse. too slow. I dont know how to make it faster.
@@ -224,7 +226,6 @@ def main():
     if MODE == 3:
         pat_length = TextProcesser.ngrams_patterns_pkl(db, max_in_file, patIndex)
         ins_length = TextProcesser.ngrams_instances_pkl(db, max_in_file, insIndex)
-
 
 
     treshold = 50
