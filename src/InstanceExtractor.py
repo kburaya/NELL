@@ -25,34 +25,44 @@ def extract_instances(db, iteration):
     # try to find patterns in this sentences
     logging.info("Begin instances extracting")
     category_pattern_dict.clear()
-    categories = db['indexes'].find(timeout=False)
+    categories = db['indexes'].find()
+    tmpCats = list()
     for category in categories:
-        for sentence_id in category['sentences_id']:
+        tmpItem = dict()
+        tmpItem['category_name'] = category['category_name']
+        tmpItem['sentences_id'] = category['sentences_id']
+        tmpItem['_id'] = category['_id']
+        tmpCats.append(tmpItem)
+    for cat in tmpCats:
+        for sentence_id in cat['sentences_id']:
             sentence = db['sentences'].find_one({'_id': sentence_id})
             patterns = db['patterns'].find({'used': True})
             for pattern in patterns:
-                if not (pattern['extracted_category_id'] == -1 or pattern['extracted_category_id'] == category['_id']):
+                if not (pattern['extracted_category_id'] == -1 or pattern['extracted_category_id'] == cat['_id']):
                     continue
                 pattern_words_list = nltk.word_tokenize(pattern['string'])
                 if ')' in pattern_words_list:
                     pattern_words_list.remove(')')
                 arg1_pos, arg2_pos = check_if_pattern_exists_in_sentence(sentence, pattern_words_list)
-                if arg1_pos is not None and arg2_pos is not None:
+                if arg2_pos is not None:
+                    if arg2_pos >= len(sentence['words']) :
+                        print('--' + sentence['string']+'   --  '+pattern['string'])
+                if arg1_pos is not None and arg2_pos is not None and arg2_pos < len(sentence['words']):
                     arg1 = sentence['words'][arg1_pos]
                     arg2 = sentence['words'][arg2_pos]
 
-                    if arg1['lexem'] == category['category_name'] or \
-                                    arg2['lexem'] == category['category_name']:
-                        if arg2['lexem'] == category['category_name']:
+                    if arg1['lexem'] == cat['category_name'] or \
+                                    arg2['lexem'] == cat['category_name']:
+                        if arg2['lexem'] == cat['category_name']:
                             (arg1, arg2) = (arg2, arg1)
                     else:
                         continue
 
                     if check_words_for_pattern(arg1, arg2, pattern):
-                        item = db['promoted_instances'].find({'category_name': category['category_name'],
+                        item = db['promoted_instances'].find({'category_name': cat['category_name'],
                                                               'lexem': arg2['lexem']})
                         if item.count() > 0:
-                            item = db['promoted_instances'].find_one({'category_name': category['category_name'],
+                            item = db['promoted_instances'].find_one({'category_name': cat['category_name'],
                                                                       'lexem': arg2['lexem']})
                             count_in_text = item['count_in_text']
                             if count_in_text == 0 or count_in_text is None:
@@ -63,13 +73,13 @@ def extract_instances(db, iteration):
                                                             {'$set': {'count_in_text': count_in_text}})
                             logging.info(
                                 'Found excisting instance [%s] for category [%s], with pattern [%s] and [%d] coocurences' % \
-                                (arg2['lexem'], category['category_name'], pattern['string'], count_in_text))
+                                (arg2['lexem'], cat['category_name'], pattern['string'], count_in_text))
 
                         else:
                             promoted_instance = dict()
                             promoted_instance['_id'] = db['promoted_instances'].find().count() + 1
                             promoted_instance['lexem'] = arg2['lexem']
-                            promoted_instance['category_name'] = category['category_name']
+                            promoted_instance['category_name'] = cat['category_name']
                             promoted_instance['used'] = False
                             promoted_instance['precision'] = 0
                             promoted_instance['extracted_pattern_id'] = pattern['_id']
@@ -80,7 +90,7 @@ def extract_instances(db, iteration):
 
                             db['promoted_instances'].insert(promoted_instance)
                             logging.info("Found new promoted instance [%s] for category [%s], with pattern [%s]" % \
-                                         (promoted_instance['lexem'], category['category_name'], pattern['string']))
+                                         (promoted_instance['lexem'], cat['category_name'], pattern['string']))
     categories.close()
     return
 
@@ -128,11 +138,18 @@ def evaluate_instances(db, treshold, iteration,ins_ngrams, MODE, dict_length):
     # for each category we want to have n = 0..20 (will select later) numbers of promoted instances
     # at each iteration we calculate first 20 by precision
     # all that will be out of 20 but was at list earlier will be deleted
-    categories = db['ontology'].find(timeout=False)
+    tmpCats = list()
+    categories = db['ontology'].find()
     for category in categories:
-        treshold = db['ontology'].find_one({'_id': category['_id']})['max_instance_precision']
+        tmpItem = dict()
+        tmpItem['category_name'] = category['category_name']
+        tmpItem['max_instance_precision'] = category['max_instance_precision']
+        tmpItem['_id'] = category['_id']
+        tmpCats.append(tmpItem)
+    for cat in tmpCats:
+        treshold = db['ontology'].find_one({'_id': cat['_id']})['max_instance_precision']
         promoted_instances_for_category = db['promoted_instances'].find({
-            'category_name': category['category_name']}).sort('precision', pymongo.DESCENDING)
+            'category_name': cat['category_name']}).sort('precision', pymongo.DESCENDING)
 
         new_instances = 0
         deleted_instances = 0
@@ -163,11 +180,11 @@ def evaluate_instances(db, treshold, iteration,ins_ngrams, MODE, dict_length):
                     db['promoted_instances'].update({'_id': promoted_instance['_id']},
                                                     {'$set': {'used': True,
                                                               'iteration_added': iteration_added}})
-                if category['max_instance_precision'] == 0.0:
-                    db['ontology'].update({'_id': category['_id']},
+                if cat['max_instance_precision'] == 0.0:
+                    db['ontology'].update({'_id': cat['_id']},
                                           {'$set': {'max_instance_precision': promoted_instance['precision']}})
                 logging.info('Updated category [%s] precision to [%.2f]' % (
-                category['category_name'], promoted_instance['precision']))
+                cat['category_name'], promoted_instance['precision']))
 
             # other instances must be deleted if they are not in first [n]
             else:
@@ -187,7 +204,7 @@ def evaluate_instances(db, treshold, iteration,ins_ngrams, MODE, dict_length):
                                                               'iteration_deleted': iteration_deleted}})
 
         logging.info("Add [%s] new instances, delete [%s], stayed [%d] instances for category [%s]" % \
-                     (str(new_instances), str(deleted_instances), stayed_instances, category['category_name']))
+                     (str(new_instances), str(deleted_instances), stayed_instances, cat['category_name']))
     categories.close()
     return
 

@@ -38,7 +38,7 @@ def connect_to_database():
 
     client = MongoClient('localhost', 27017)
     global db
-    db = client.experiments
+    db = client.test
 
 def inizialize():
     # Read initial ontology and patterns
@@ -206,8 +206,8 @@ def main():
     inizialize()
 
     #getting text from files and building indexes
-    #TextProcesser.build_indexes_sceleton(db)
-    #TextProcesser.preprocess_files(db)
+    TextProcesser.build_indexes_sceleton(db)
+    TextProcesser.preprocess_files(db)
 
 
     # slow method. saves ngrams to databse. too slow. I dont know how to make it faster.
